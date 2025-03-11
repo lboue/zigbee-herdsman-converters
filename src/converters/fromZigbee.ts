@@ -508,6 +508,20 @@ export const pressure: Fz.Converter = {
         return {pressure};
     },
 };
+export const windspeed: Fz.Converter = {
+    cluster: "msWindSpeedMeasurement",
+    type: ["attributeReport", "readResponse"],
+    convert: (model, msg, publish, options, meta) => {
+        let windspeed = 0;
+        if (msg.data.scaledValue !== undefined) {
+            const scale = msg.endpoint.getClusterAttributeValue("msWindSpeedMeasurement", "scale") as number;
+            windspeed = msg.data.scaledValue / 10 ** scale / 100.0; // convert to m/s
+        } else {
+            windspeed = Number.parseFloat(msg.data.measuredValue);
+        }
+        return {windspeed};
+    },
+};
 export const co2: Fz.Converter = {
     cluster: "msCO2",
     type: ["attributeReport", "readResponse"],
